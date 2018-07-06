@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Config = require('./models/Config');
 const jobTask = require('./batchJob/jobTask');
-
+const logger = require('./helper/logger');
 let config = {
 
     _id: "5b3fd6edf3f74186ccd93411",
@@ -31,11 +31,11 @@ let config = {
             this.get_last_timestamp = config.get_last_timestamp;
             this.update_timestamp = config.update_timestamp;
             console.log(this);
-
+            logger("Config","initialize","OK");
             jobTask.start();
 
         }).catch((err) => {
-
+            logger("Config","initialize","ERROR"+ err.message);
             console.log(err.statusCode, err.message, 'config service error.');
 
         });
