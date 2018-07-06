@@ -4,7 +4,7 @@ const Post = require('../models/Post');
 const logger = require('../helper/logger');
 const config = require('../config');
 
-let JobWebHose = {
+var JobWebHose = {
 
     run: (timestamp) => {
 

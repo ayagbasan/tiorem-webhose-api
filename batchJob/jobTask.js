@@ -1,6 +1,6 @@
 const config = require('../config');
 const CronJob = require('cron').CronJob;
-//const JobWebHose = require('./JobWebHose');
+const JobWebHose = require('./JobWebHose');
 const logger = require('../helper/logger');
 
 
@@ -18,7 +18,7 @@ var jobTask = {
 
 
                     console.log("Get last timestamp: ", config.last_timestamp, " Next Job Runtime", this.nextDates());
-                    //JobWebHose.run(config.last_timestamp);
+                    JobWebHose.run(config.last_timestamp);
                     config.update_timestamp(123);
                     
 
