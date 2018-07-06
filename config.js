@@ -31,11 +31,11 @@ let config = {
             this.get_last_timestamp = config.get_last_timestamp;
             this.update_timestamp = config.update_timestamp;
             console.log(this);
-            logger("Config","initialize","OK");
+            logger.addLog("Config","initialize","OK");
             jobTask.start();
 
         }).catch((err) => {
-            logger("Config","initialize","ERROR"+ err.message);
+            logger.addLog("Config","initialize","ERROR"+ err.message);
             console.log(err.statusCode, err.message, 'config service error.');
 
         });
