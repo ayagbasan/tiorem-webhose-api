@@ -12,7 +12,7 @@ var jobTask = {
 
 
         new CronJob({
-            cronTime: '*/10 * * * * *',//config.job_periode,
+            cronTime: config.job_periode,
             onTick: function () {
                 try {
 
