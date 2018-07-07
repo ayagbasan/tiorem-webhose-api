@@ -35,9 +35,7 @@ var jobTask = {
 
     run: (timestamp) => {
 
-        const client = webhoseio.config({ token: '8e1ba289-9e49-44c4-83b1-53f94dd2d311' });
-
-
+        const client = webhoseio.config({ token: config.api_secret_key });
 
         let query = client.query('filterWebContent', {
             q: config.search_query,
