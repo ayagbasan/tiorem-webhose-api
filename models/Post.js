@@ -17,7 +17,14 @@ const PostSchema = new Schema(
     external_links:[String],
     rating:Number,
     entities:[Entity.schema],
-    crawled:Date
+    crawled:Date,
+    isProcess:{
+      type:Boolean,
+      default:false
+    },
+    googleId: String,
+    relatedNewsId : String
+
   }
 );
 

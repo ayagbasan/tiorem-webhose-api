@@ -5,7 +5,9 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 
 // routers
- 
+const globalRoute = require('./routes/GlobalRoute');
+const accountRoute = require('./routes/AccountRoute');
+const postRoute = require('./routes/PostRoute');
  
 
 const app = express();
@@ -23,7 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // db connection
 const db = require('./helper/db.js')();
-const logger = require('./helper/logger.js');
+const logger = require('./helper/logger.js'); 
 
 // Batch Jobs
  
@@ -46,7 +48,7 @@ app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization, x-access-token"
   );
   if (req.method === "OPTIONS") {
     res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET");
@@ -60,9 +62,11 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 
-//app.use('/api', verifyToken);
-//app.use('/', global);
- 
+app.use('/api/global', globalRoute);
+app.use('/api', verifyToken);
+app.use('/api/post', postRoute);
+app.use('/api/acoount', accountRoute); 
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

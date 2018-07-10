@@ -1,19 +1,39 @@
-const webhoseio = require('webhoseio');
 const mongoose = require('mongoose');
-const Post = require('../models/Post');
-const logger = require('../helper/logger');
+const CronJob = require('cron').CronJob;
+const webhoseio = require('webhoseio');
 const config = require('../config');
+const logger = require('../helper/logger');
+const Post = require('../models/Post');
 
-var JobWebHose = {
+var jobTask = {
+
+    start: () => {
+
+        console.log(config);
+        new CronJob({
+            cronTime: config.job_periode,
+            onTick: function () {
+                try {
+                    console.log("Get last timestamp: ", config.last_timestamp, " Next Job Runtime", this.nextDates());
+                    jobTask.run(config.last_timestamp);
+
+                } catch (error) {
+                    logger.addLog("Cron Job", "WebHose-Job-Error", error);
+                }
+            },
+            onComplete: function () {
+                console.log("job bitti");
+            },
+            start: true,
+            runOnInit: true,
+
+        });
+
+    },
 
     run: (timestamp) => {
 
-
-
-
-        const client = webhoseio.config({ token: '8e1ba289-9e49-44c4-83b1-53f94dd2d311' });
-
-        let prevMinute = 0;
+        const client = webhoseio.config({ token: config.api_secret_key });
 
         let query = client.query('filterWebContent', {
             q: config.search_query,
@@ -30,8 +50,6 @@ var JobWebHose = {
             logger.addLog("Post", "WebHose-Read", "Success", output.totalResults, output.moreResultsAvailable, output.requestsLeft);
             config.update_timestamp(new Date().getTime());
         });
-
-
 
 
 
@@ -55,11 +73,8 @@ var JobWebHose = {
         };
 
     }
-
 }
 
-
-
-module.exports = JobWebHose;
+module.exports = jobTask;
 
 

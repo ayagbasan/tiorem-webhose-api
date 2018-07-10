@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 const Config = require('./models/Config');
-const jobTask = require('./batchJob/jobTask');
 const logger = require('./helper/logger');
+const jobTask = require('./batchJob/jobTask');
+
+
 let config = {
 
     _id: "5b3fd6edf3f74186ccd93411",
@@ -11,6 +13,7 @@ let config = {
     job_next_run: null,
     job_periode: "1",
     api_secret_key: null,
+    token_secret_key :"5b3fd6edf3f74186ccd93411",
 
     get: () => {
 
@@ -23,6 +26,7 @@ let config = {
                 data.last_timestamp = new Date().getTime() - (1000 * 60 * 10);
 
 
+            this._id="5b3fd6edf3f74186ccd93411";
             this.last_timestamp = data.last_timestamp;
             this.search_query = data.search_query;
             this.job_next_run = data.job_next_run;
@@ -30,9 +34,11 @@ let config = {
             this.api_secret_key = data.api_secret_key;
             this.get_last_timestamp = config.get_last_timestamp;
             this.update_timestamp = config.update_timestamp;
+            this.token_secret_key = config.token_secret_key;
+
             console.log(this);
+            //jobTask.start();
             logger.addLog("Config","initialize","OK");
-            jobTask.start();
 
         }).catch((err) => {
             logger.addLog("Config","initialize","ERROR"+ err.message);
