@@ -17,7 +17,7 @@ var jobTask_GoogleRss_Reader = {
             cronTime: config.job_periode_GoogleRss,
             onTick: function () {
                 try {
-                    console.log("Get last timestamp: ", config.last_timestamp_GoogleRss, " Next Job Runtime", this.nextDates());
+                    console.log("jobTask_GoogleRss_Reader Get last timestamp: ", config.last_timestamp_GoogleRss, " Next Job Runtime", this.nextDates());
                     jobTask_GoogleRss_Reader.run(config.last_timestamp_GoogleRss);
 
                 } catch (error) {

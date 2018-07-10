@@ -14,7 +14,7 @@ var jobTask_WebHose_Reader = {
             cronTime: config.job_periode_WebHose,
             onTick: function () {
                 try {
-                    console.log("Get last timestamp: ", config.last_timestamp_WebHosetimestamp, " Next Job Runtime", this.nextDates());
+                    console.log("jobTask_WebHose_Reader Get last timestamp: ", config.last_timestamp_WebHose, " Next Job Runtime", this.nextDates());
                     jobTask_WebHose_Reader.run(config.last_timestamp_WebHose);
 
                 } catch (error) {
