@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Config = require('./models/Config');
 const logger = require('./helper/logger');
-const jobTask = require('./batchJob/jobTask');
+const jobTask_WebHose_Reader = require('./batchJob/jobTask_WebHose_Reader');
 
 
 let config = {
@@ -37,7 +37,7 @@ let config = {
             this.token_secret_key = config.token_secret_key;
 
             console.log(this);
-            //jobTask.start();
+            jobTask_WebHose_Reader.start();
             logger.addLog("Config","initialize","OK");
 
         }).catch((err) => {

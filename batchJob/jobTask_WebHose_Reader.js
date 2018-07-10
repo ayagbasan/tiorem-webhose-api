@@ -5,7 +5,7 @@ const config = require('../config');
 const logger = require('../helper/logger');
 const Post = require('../models/Post');
 
-var jobTask = {
+var jobTask_WebHose_Reader = {
 
     start: () => {
 
@@ -15,7 +15,7 @@ var jobTask = {
             onTick: function () {
                 try {
                     console.log("Get last timestamp: ", config.last_timestamp, " Next Job Runtime", this.nextDates());
-                    jobTask.run(config.last_timestamp);
+                    jobTask_WebHose_Reader.run(config.last_timestamp);
 
                 } catch (error) {
                     logger.addLog("Cron Job", "WebHose-Job-Error", error);
@@ -75,6 +75,6 @@ var jobTask = {
     }
 }
 
-module.exports = jobTask;
+module.exports = jobTask_WebHose_Reader;
 
 
