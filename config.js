@@ -51,7 +51,7 @@ let config = {
 
             //console.log(this);
             jobTask_WebHose_Reader.start();
-            //jobTask_GoogleRss_Reader.start();
+            jobTask_GoogleRss_Reader.start();
             logger.addLog("Config", "initialize", "OK");
 
         }).catch((err) => {
