@@ -1,16 +1,16 @@
 let Response = {
 
 
-    setSuccess: function (successData) {
+    setSuccess: function (successData, totalCount) {
 
         let result = {};
         result.Data = successData;
-        if(!result.TotalCount)
-        {
-            if(Array.isArray(successData))
-                result.TotalCount= successData.length;
+        result.TotalCount = totalCount;
+        if (!result.TotalCount) {
+            if (Array.isArray(successData))
+                result.TotalCount = successData.length;
             else
-                result.TotalCount=1;
+                result.TotalCount = 1;
         }
 
         result.IsSuccess = true;

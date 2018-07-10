@@ -4,11 +4,14 @@ const Schema = mongoose.Schema;
 const ConfigSchema = new Schema(
   {
     _id:mongoose.Schema.Types.ObjectId, 
-    last_timestamp:Number,
+    last_timestamp_WebHose:Number,
+    last_timestamp_GoogleRss:Number,
     search_query:String,
     job_next_run:Date, 
     api_secret_key:String, 
-    job_periode:String, 
+    job_periode_WebHose:String, 
+    job_periode_GoogleRss:String, 
+
   }
 );
 

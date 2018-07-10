@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate');
 const Schema = mongoose.Schema;
 const Thread = require('./Thread');
 const Entity = require('./Entity');
@@ -23,9 +24,16 @@ const PostSchema = new Schema(
       default:false
     },
     googleId: String,
-    relatedNewsId : String
+    relatedNewsId : String,
+    createdAt:
+    {
+        type: Date,
+        default: Date.now
+    },
 
   }
 );
+
+PostSchema.plugin(mongoosePaginate);
 
 module.exports = mongoose.model('Post', PostSchema);

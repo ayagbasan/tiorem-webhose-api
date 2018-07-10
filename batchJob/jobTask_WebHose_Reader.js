@@ -9,13 +9,13 @@ var jobTask_WebHose_Reader = {
 
     start: () => {
 
-        console.log(config);
+         
         new CronJob({
-            cronTime: config.job_periode,
+            cronTime: config.job_periode_WebHose,
             onTick: function () {
                 try {
-                    console.log("Get last timestamp: ", config.last_timestamp, " Next Job Runtime", this.nextDates());
-                    jobTask_WebHose_Reader.run(config.last_timestamp);
+                    console.log("Get last timestamp: ", config.last_timestamp_WebHoseimestamp, " Next Job Runtime", this.nextDates());
+                    jobTask_WebHose_Reader.run(config.last_timestamp_WebHose);
 
                 } catch (error) {
                     logger.addLog("Cron Job", "WebHose-Job-Error", error);
@@ -48,7 +48,7 @@ var jobTask_WebHose_Reader = {
 
             console.log("Post", "WebHose-Read", "Success", output.totalResults, output.moreResultsAvailable, output.requestsLeft);
             logger.addLog("Post", "WebHose-Read", "Success", output.totalResults, output.moreResultsAvailable, output.requestsLeft);
-            config.update_timestamp(new Date().getTime());
+            config.update_timestamp(new Date().getTime(),"jobTask_WebHose_Reader");
         });
 
 
