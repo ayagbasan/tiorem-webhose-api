@@ -10,6 +10,7 @@ const GoogleRssSchema = new Schema(
             default:""
         },
         title: {
+            unique: true,
             type: String,
         },
         link: {
