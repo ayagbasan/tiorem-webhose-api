@@ -18,6 +18,7 @@ var rss = {
                 feed.items[i]._id = new mongoose.Types.ObjectId();
                 feed.items[i].category = source.category;
                 feed.items[i].source = source.sourceName;
+                feed.items[i].pubDate = new Date(feed.items[i].pubDate);
             }
 
 

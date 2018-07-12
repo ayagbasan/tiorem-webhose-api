@@ -32,7 +32,7 @@ const RssSchema = new Schema(
             type: String,
         },
         pubDate: {
-            type: String,
+            type: Date,
         },
         category: {
             type: String,

@@ -12,7 +12,7 @@ router.get('/', (req, res, next) => {
     query = {};
     var options = {
 
-        sort: { createdAt: -1 },
+        sort: { pubDate: -1 },
         lean: true,
         page: parseInt(req.query.page),
         limit: parseInt(req.query.take),
