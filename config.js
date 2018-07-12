@@ -6,16 +6,11 @@ const jobTask_GoogleRss_Reader = require('./batchJob/jobTask_GoogleRss_Reader');
 
 let config = {
 
-    _id: "5b3fd6edf3f74186ccd93411",
+    _id: "5b47145574d6642da4c98361",
     environment: "PROD",
-    last_timestamp_WebHose: null,
-    last_timestamp_GoogleRss: null,
-    search_query: null,
-    job_next_run: null,
-    job_periode_GoogleRss: "1",
-    job_periode_WebHose: "1",
-    api_secret_key: null,
-    token_secret_key: "5b3fd6edf3f74186ccd93411",
+    token_secret_key: "5b47145574d6642da4c98361",
+    Data: null,
+
 
     get: () => {
 
@@ -23,35 +18,25 @@ let config = {
 
         promise.then((data) => {
 
-
-             
-            if (data.last_timestamp_WebHose === 1)
-                data.last_timestamp_WebHose = new Date().getTime() - (1000 * 60 * 10);
-
-            if (data.last_timestamp_GoogleRss === 1)
-                data.last_timestamp_GoogleRss = new Date().getTime() - (1000 * 60 * 10);
-
-
-            this._id = "5b3fd6edf3f74186ccd93411";
-            
-            this.last_timestamp_WebHose = data.last_timestamp_WebHose;
-            this.job_periode_WebHose = data.job_periode_WebHose;
-
-            this.last_timestamp_GoogleRss = data.last_timestamp_GoogleRss;
-            this.job_periode_GoogleRss = data.job_periode_GoogleRss;
-
-
-            this.search_query = data.search_query;
-            this.job_next_run = data.job_next_run;     
-
-            this.api_secret_key = data.api_secret_key;
-            this.get_last_timestamp = config.get_last_timestamp;
             this.update_timestamp = config.update_timestamp;
-            this.token_secret_key = config.token_secret_key;
+            this.get = config.get;
+            this.Data = data;
 
+            console.log("Getting app variables", this.Data);
+
+            if (data.GoogleRSS != null && data.GoogleRSS.status === 1) {
+                console.log("GoogleRSS starting......");
+                jobTask_GoogleRss_Reader.start();
+            }
+
+
+            if (data.WebHose != null && data.WebHose.status === 1) {
+                console.log("WebHose starting......");
+                jobTask_WebHose_Reader.start();
+            }
             //console.log(this);
-            jobTask_WebHose_Reader.start();
-            jobTask_GoogleRss_Reader.start();
+            //jobTask_WebHose_Reader.start();
+            //jobTask_GoogleRss_Reader.start();
             logger.addLog("Config", "initialize", "OK");
 
         }).catch((err) => {
@@ -61,16 +46,24 @@ let config = {
         });
     },
 
-    update_timestamp: (last_timestamp,jobType) => {
+    update_timestamp: (datetime, jobType) => {
 
         let options = { runValidators: true, new: true };
 
         let whereClause = null;
         if (jobType === "jobTask_WebHose_Reader") {
-            whereClause = { last_timestamp_WebHose: last_timestamp };
+            whereClause =
+                {
+                    "WebHose.$.lastTimestamp": datetime.getTime(),
+                    "WebHose.$.lastRunTime": datetime
+                };
         }
         else if (jobType === "jobTask_GoogleRss_Reader") {
-            whereClause = { last_timestamp_GoogleRss: last_timestamp };
+            whereClause =
+                {
+                    "GoogleRss.$.lastTimestamp": datetime.getTime(),
+                    "GoogleRss.$.lastRunTime": datetime
+                };
         }
 
         const promise = Config.findByIdAndUpdate(
@@ -80,8 +73,8 @@ let config = {
         );
 
         promise.then((data) => {
-            this.last_timestamp = last_timestamp;
-            console.log("Update last timestamp for "+ jobType +" : ", last_timestamp);
+            this.Data = data;
+            console.log("Update last timestamp for " + jobType + " : ", datetime.getTime());
 
         }).catch((err) => {
             console.log(err.statusCode, err.message, 'config service error. update last timestamp');
@@ -92,29 +85,7 @@ let config = {
 
     },
 
-    get_last_timestamp: (jobType) => {
 
-        const promise = Config.findById(config._id);
-
-        promise.then((data) => {
-            if (jobType === "jobTask_WebHose_Reader") {
-                if (data.last_timestamp_WebHose === 1)
-                    data.last_timestamp_WebHose = new Date().getTime() - (1000 * 60 * 10);
-                this.last_timestamp_WebHose = data.last_timestamp_WebHose;
-            }
-            else if (jobType === "jobTask_GoogleRss_Reader") {
-                if (data.last_timestamp_GoogleRss === 1)
-                    data.last_timestamp_GoogleRss = new Date().getTime() - (1000 * 60 * 10);
-                this.last_timestamp_GoogleRss = data.last_timestamp_GoogleRss;
-            }
-
-        }).catch((err) => {
-
-            console.log(err.statusCode, err.message, 'config service error.');
-
-        });
-
-    }
 
 }
 

@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 const globalRoute = require('./routes/GlobalRoute');
 const accountRoute = require('./routes/AccountRoute');
 const postRoute = require('./routes/PostRoute');
+const configRoute = require('./routes/ConfigRoute');
  
 
 const app = express();
@@ -63,9 +64,10 @@ app.set('view engine', 'jade');
 
 
 app.use('/api/global', globalRoute);
-app.use('/api', verifyToken);
+//app.use('/api', verifyToken);
 app.use('/api/post', postRoute);
-app.use('/api/acoount', accountRoute); 
+app.use('/api/account', accountRoute); 
+app.use('/api/config', configRoute); 
 
 
 // catch 404 and forward to error handler

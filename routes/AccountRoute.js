@@ -74,27 +74,6 @@ router.post('/updateAccount', (req, res, next) => {
 });
 
 
-let updateLastLogin =(userId)=>{
 
-    let options = { runValidators: true, new: true };
-    const promise = Account.findByIdAndUpdate(
-        userId,
-        {
-            lasLogin : new Date()
-        },
-        options
-    );
-
-    promise.then((data) => {
-        if (!data) {
-            next(res.json(response.setError(99, null, 'The account was not found.')));
-
-        } else {
-            res.json(response.setSuccess(data));
-        }
-    }).catch((err) => {
-        res.json(response.setError(err.statusCode, err.message, 'Account service error.'));
-    });
-}
 
 module.exports = router;

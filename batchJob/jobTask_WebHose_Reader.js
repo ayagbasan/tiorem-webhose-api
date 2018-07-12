@@ -11,11 +11,11 @@ var jobTask_WebHose_Reader = {
 
          
         new CronJob({
-            cronTime: config.job_periode_WebHose,
+            cronTime: config.Data.WebHose.periode,
             onTick: function () {
                 try {
-                    console.log("jobTask_WebHose_Reader Get last timestamp: ", config.last_timestamp_WebHose, " Next Job Runtime", this.nextDates());
-                    jobTask_WebHose_Reader.run(config.last_timestamp_WebHose);
+                    console.log("jobTask_WebHose_Reader Get last timestamp: ", config.Data.WebHose.lastTimestamp, " Next Job Runtime", this.nextDates());
+                    jobTask_WebHose_Reader.run();
 
                 } catch (error) {
                     logger.addLog("Cron Job", "WebHose-Job-Error", error);
@@ -31,14 +31,14 @@ var jobTask_WebHose_Reader = {
 
     },
 
-    run: (timestamp) => {
+    run: () => {
 
-        const client = webhoseio.config({ token: config.api_secret_key });
+        const client = webhoseio.config({ token: config.Data.WebHose.apiSecretKey });
 
         let query = client.query('filterWebContent', {
-            q: config.search_query,
-            size: 100,
-            ts: timestamp
+            q: config.Data.WebHose.searchQuery,
+            size: config.Data.WebHose.maxQueryLimit,
+            ts: config.Data.WebHose.lastTimestamp,
         });
 
 
@@ -48,7 +48,7 @@ var jobTask_WebHose_Reader = {
 
             console.log("Post", "WebHose-Read", "Success", output.totalResults, output.moreResultsAvailable, output.requestsLeft);
             logger.addLog("Post", "WebHose-Read", "Success", output.totalResults, output.moreResultsAvailable, output.requestsLeft);
-            config.update_timestamp(new Date().getTime(),"jobTask_WebHose_Reader");
+            config.update_timestamp(new Date(),"jobTask_WebHose_Reader");
         });
 
 
