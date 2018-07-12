@@ -9,7 +9,8 @@ const globalRoute = require('./routes/GlobalRoute');
 const accountRoute = require('./routes/AccountRoute');
 const postRoute = require('./routes/PostRoute');
 const configRoute = require('./routes/ConfigRoute');
- 
+const rssSourceRoute = require('./routes/RssSourceRoute');
+const categoryRoute = require('./routes/CategoryRoute');
 
 const app = express();
 
@@ -68,8 +69,8 @@ app.use('/api/global', globalRoute);
 app.use('/api/post', postRoute);
 app.use('/api/account', accountRoute); 
 app.use('/api/config', configRoute); 
-
-
+app.use('/api/rssSource', rssSourceRoute); 
+app.use('/api/category', categoryRoute); 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   const err = new Error('Not Found');

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const config = require('../config'); 
+const unitTest = require('../unitTest'); 
 
 module.exports = () => {
 
@@ -11,8 +12,9 @@ module.exports = () => {
 
     mongoose.connection.on('open', () => {
         console.log('MongoDB: Connected');
-        config.get();
+        //config.get();
 
+        unitTest.startJob();
 
     });
     mongoose.connection.on('error', (err) => {

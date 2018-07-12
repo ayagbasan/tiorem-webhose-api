@@ -20,7 +20,12 @@ let Response = {
     setError: function (errCode, errMsg, customMsg) {
 
         let result = {};
-
+        result.Data = {
+            docs: [],
+            limit: 0,
+            offset: 0,
+            total: 0
+        };
         result.IsSuccess = false;
         result.ErrorCode = errCode;
         if (customMsg)
