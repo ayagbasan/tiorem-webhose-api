@@ -9,6 +9,9 @@ const RssSchema = new Schema(
             type: String,
             default: ""
         },
+        source: {
+            type: String,
+        },
         title: {
             type: String,
         },

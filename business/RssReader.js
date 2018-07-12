@@ -7,8 +7,8 @@ const Rss = require('../models/Rss');
 var rss = {
 
     read: (source) => {
-        
-        console.log("reading start from", source.url);
+
+        console.log("reading start from", source.sourceName, source.category);
 
         return (async () => {
 
@@ -17,18 +17,23 @@ var rss = {
             for (let i = 0; i < feed.items.length; i++) {
                 feed.items[i]._id = new mongoose.Types.ObjectId();
                 feed.items[i].category = source.category;
+                feed.items[i].source = source.sourceName;
             }
 
 
 
             Rss.insertMany(feed.items, { ordered: false })
                 .then(function (mongooseDocuments) {
-                    
-                    console.log("reading completed from ", source.sourceName,source.category, feed.items.length);
+
+                    console.log("FULL INSERT - reading completed from ", source.sourceName, source.category, feed.items.length);
                 })
                 .catch(function (err) {
                     if (err.writeErrors) {
-                        console.log("reading completed from", source.sourceName,source.category,
+                        let type = "PARTIAL INSERT";
+                        if (err.writeErrors.length === feed.items.length)
+                            type = "FULL DUPLICATE";
+
+                        console.log(type, "reading completed from", source.sourceName, source.category,
                             "Total items:", feed.items.length,
                             "New items:", feed.items.length - err.writeErrors.length,
                             "Duplicate items", err.writeErrors.length);
