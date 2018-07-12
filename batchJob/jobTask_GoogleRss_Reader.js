@@ -8,11 +8,11 @@ const logger = require('../helper/logger');
 const GoogleRss = require('../models/GoogleRss');
 
 var jobTask_GoogleRss_Reader = {
-
+    cron: null,
     start: () => {
 
-        console.log(config.Data.GoogleRSS.lastTimestamp);
-        new CronJob({
+         
+        jobTask_GoogleRss_Reader.cron = new CronJob({
             cronTime: config.Data.GoogleRSS.periode,
             onTick: function () {
                 try {
@@ -32,7 +32,15 @@ var jobTask_GoogleRss_Reader = {
         });
 
     },
+    stop: () => {
+        if (jobTask_GoogleRss_Reader.cron != null) {
+            jobTask_GoogleRss_Reader.cron.stop();
+        }
+    },
 
+    getStatus: () => {
+        return jobTask_GoogleRss_Reader.cron;
+    },
     run: () => {
 
         (async () => {
@@ -71,7 +79,7 @@ var jobTask_GoogleRss_Reader = {
 
             console.log("GoogleRss", "GoogleRss-Read", "Success", feed.items.length, success, error);
             logger.addLog("GoogleRss", "GoogleRss-Read", "Success", feed.items.length, success, error);
-            config.update_timestamp(new Date(), "jobTask_GoogleRss_Reader");
+            config.update_timestamp(new Date(), "jobTask_GoogleRss_Reader", jobTask_GoogleRss_Reader.cron.nextDates());
 
         })();
 

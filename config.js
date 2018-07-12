@@ -32,7 +32,7 @@ let config = {
 
             if (data.WebHose != null && data.WebHose.status === 1) {
                 console.log("WebHose starting......");
-                jobTask_WebHose_Reader.start();
+               // jobTask_WebHose_Reader.start();
             }
             //console.log(this);
             //jobTask_WebHose_Reader.start();
@@ -46,7 +46,7 @@ let config = {
         });
     },
 
-    update_timestamp: (datetime, jobType) => {
+    update_timestamp: (datetime, jobType, nexttime) => {
 
         let options = { runValidators: true, new: true };
 
@@ -54,20 +54,22 @@ let config = {
         if (jobType === "jobTask_WebHose_Reader") {
             whereClause =
                 {
-                    "WebHose.$.lastTimestamp": datetime.getTime(),
-                    "WebHose.$.lastRunTime": datetime
+                    "WebHose.lastTimestamp": datetime.getTime(),
+                    "WebHose.lastRunTime": datetime,
+                    "WebHose.nextRunTime": nexttime
                 };
         }
         else if (jobType === "jobTask_GoogleRss_Reader") {
             whereClause =
                 {
-                    "GoogleRss.$.lastTimestamp": datetime.getTime(),
-                    "GoogleRss.$.lastRunTime": datetime
+                    "GoogleRSS.lastTimestamp": datetime.getTime(),
+                    "GoogleRSS.lastRunTime": datetime,
+                    "GoogleRSS.nextRunTime": nexttime
                 };
         }
 
-        const promise = Config.findByIdAndUpdate(
-            this._id,
+        const promise = Config.findOneAndUpdate(
+            this.Data._id,
             whereClause,
             options
         );

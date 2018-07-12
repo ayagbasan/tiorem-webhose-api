@@ -7,10 +7,11 @@ const Post = require('../models/Post');
 
 var jobTask_WebHose_Reader = {
 
+    cron: null,
     start: () => {
 
-         
-        new CronJob({
+
+        jobTask_WebHose_Reader.cron = new CronJob({
             cronTime: config.Data.WebHose.periode,
             onTick: function () {
                 try {
@@ -31,6 +32,16 @@ var jobTask_WebHose_Reader = {
 
     },
 
+    stop: () => {
+        if (jobTask_WebHose_Reader.cron != null) {
+            jobTask_WebHose_Reader.cron.stop();
+        }
+    },
+
+    getStatus: () => {
+        return jobTask_WebHose_Reader.cron;
+    },
+
     run: () => {
 
         const client = webhoseio.config({ token: config.Data.WebHose.apiSecretKey });
@@ -48,7 +59,7 @@ var jobTask_WebHose_Reader = {
 
             console.log("Post", "WebHose-Read", "Success", output.totalResults, output.moreResultsAvailable, output.requestsLeft);
             logger.addLog("Post", "WebHose-Read", "Success", output.totalResults, output.moreResultsAvailable, output.requestsLeft);
-            config.update_timestamp(new Date(),"jobTask_WebHose_Reader");
+            config.update_timestamp(new Date(), "jobTask_WebHose_Reader", jobTask_WebHose_Reader.cron.nextDates());
         });
 
 

@@ -3,6 +3,34 @@ const express = require('express');
 const router = express.Router();
 let response = require('../models/Response');
 const Config = require('../models/Config');
+
+
+
+router.post('/webHose', (req, res, next) => {
+
+    console.log(req.body);
+    
+    let serviceName= req.body.ServiceName;
+    let term= req.body.Term;
+
+    if (serviceName === "WebHose") {
+        if (term === "start")
+            jobTask_WebHose_Reader.start();
+        else if (term === "stop")
+            jobTask_WebHose_Reader.stop();
+    }
+
+    promise.then((data) => {
+
+        res.json(response.setSuccess(data));
+
+    }).catch((err) => {
+
+        res.json(response.setError(err.statusCode, err.message, 'Config service error.'));
+
+    });
+});
+
 //select by id
 router.get('/:id', (req, res, next) => {
 
