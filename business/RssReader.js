@@ -40,6 +40,7 @@ var rss = {
                             "Duplicate items", err.writeErrors.length);
                     } else {
                         console.log("reading completed from", source.url, "unknown error", err);
+                        logger.addLog("RSS-Reader", source.sourceName + "-" + source.category, err, 0, 0, 0);
                     }
 
                 });

@@ -30,10 +30,10 @@ let config = {
             }
 
 
-            if (data.WebHose != null && data.WebHose.status === 1) {
-                console.log("WebHose starting......");
-                jobTask_WebHose_Reader.start();
-            }
+            // if (data.WebHose != null && data.WebHose.status === 1) {
+            //     console.log("WebHose starting......");
+            //     jobTask_WebHose_Reader.start();
+            // }
             //console.log(this);
             //jobTask_WebHose_Reader.start();
             //jobTask_GoogleRss_Reader.start();

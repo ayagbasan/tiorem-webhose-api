@@ -50,30 +50,29 @@ var jobTask_GoogleRss_Reader = {
 
             var success = 0, error = 0;
             for (let i = 0; i < feed.items.length; i++) {
-
                 feed.items[i]._id = new mongoose.Types.ObjectId();
-                feed.items[i].clusterId = jobTask_GoogleRss_Reader.getClusterId(feed.items[i].guid);
-                /*let newNews = new GoogleRss(feed.items[i]);
-                newNews.clusterId = jobTask_GoogleRss_Reader.getClusterId(newNews.guid);
-                newNews._id = new mongoose.Types.ObjectId();               
-                newNews.save(function (err) {
-                    if (!err) {
-                        success++;
-                    } else {
-                        error++;
-                        console.log(err);
-                    }
-
-                });*/
+                feed.items[i].clusterId = jobTask_GoogleRss_Reader.getClusterId(feed.items[i].guid);               
             }
 
 
             GoogleRss.insertMany(feed.items, { ordered: false })
                 .then(function (mongooseDocuments) {
-                    //console.log("OK", mongooseDocuments);
+                    console.log("FULL INSERT - reading completed from ",  "Google RSS", feed.items.length);
                 })
                 .catch(function (err) {
-                    // console.log("Error", err);
+
+                    if (err.writeErrors) {
+                        let type = "PARTIAL INSERT";
+                        if (err.writeErrors.length === feed.items.length)
+                            type = "FULL DUPLICATE";
+
+                        console.log(type, "reading completed from", "Google RSS",
+                            "Total items:", feed.items.length,
+                            "New items:", feed.items.length - err.writeErrors.length,
+                            "Duplicate items", err.writeErrors.length);
+                    } else {
+                        console.log("reading completed from", "Google RSS", "unknown error", err);
+                    }
                 });
 
 
