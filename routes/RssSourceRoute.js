@@ -12,7 +12,7 @@ router.get('/', (req, res, next) => {
     query = {};
     var options = {
 
-        sort: { url: -1 },
+        sort: { sourceName: 1 },
         lean: true,
         page: parseInt(req.query.page),
         limit: parseInt(req.query.take),
@@ -69,7 +69,7 @@ router.post('/', (req, res, next) => {
     req.body._id = new mongoose.Types.ObjectId();
 
     const myURL = url.parse(req.body.url);
-    req.body.sourceName= myURL.host;
+    req.body.sourceName = myURL.host;
 
     const rssSource = new RssSource(req.body);
     const promise = rssSource.save();
@@ -85,13 +85,57 @@ router.post('/', (req, res, next) => {
     });
 });
 
+//insert Multi
+router.post('/import', (req, res, next) => {
+
+    if (req.body.Data && req.body.Data.length > 0) {
+
+        for (const iterator of req.body.Data) {
+            iterator._id = new mongoose.Types.ObjectId();
+            iterator.sourceName = url.parse(iterator.url).host;
+        }
+
+        
+        RssSource.insertMany(req.body.Data, { ordered: false })
+            .then(function (mongooseDocuments) {
+                let message = ("FULL INSERT " +
+                    "Total items:" + " " + req.body.Data.length + " " +
+                    "New items:" + " " + (req.body.Data.length) + " " +
+                    "Duplicate items" + " 0");
+
+                res.json(response.setSuccess(message));
+            })
+            .catch(function (err) {
+
+                if (err.writeErrors) {
+                    let type = "PARTIAL INSERT ";
+                    if (err.writeErrors.length === req.body.Data.length)
+                        type = "FULL DUPLICATE ";
+
+                    let message = (type + " " +
+                        "Total items:" + " " + req.body.Data.length + " " +
+                        "New items:" + " " + (req.body.Data.length - err.writeErrors.length) + " " +
+                        "Duplicate items" + " " + err.writeErrors.length);
+
+                    res.json(response.setSuccess(message));
+
+                } else {
+                    res.json(response.setError(err.statusCode, err.message, 'RssSource service error.'));
+                }
+            });
+
+    } else {
+        res.json(response.setError("Liste boş ya da yok"));
+    }
+});
+
 
 //update RssSource
 router.put('/', (req, res, next) => {
     console.log(req.body);
     let options = { runValidators: true, new: true };
     const myURL = url.parse(req.body.url);
-    req.body.sourceName= myURL.host;
+    req.body.sourceName = myURL.host;
 
     const promise = RssSource.findByIdAndUpdate(
         req.body._id,

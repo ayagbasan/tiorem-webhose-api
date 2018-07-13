@@ -6,12 +6,55 @@ const Category = require('../models/Category');
 const RssSource = require('../models/RssSource');
 
 
+//insert Multi
+router.post('/import', (req, res, next) => {
+
+    if (req.body.Data && req.body.Data.length > 0) {
+
+        for (const iterator of req.body.Data) {
+            iterator._id = new mongoose.Types.ObjectId();           
+        }
+
+        
+        Category.insertMany(req.body.Data, { ordered: false })
+            .then(function (mongooseDocuments) {
+                let message = ("FULL INSERT " +
+                    "Total items:" + " " + req.body.Data.length + " " +
+                    "New items:" + " " + (req.body.Data.length) + " " +
+                    "Duplicate items" + " 0");
+
+                res.json(response.setSuccess(message));
+            })
+            .catch(function (err) {
+
+                if (err.writeErrors) {
+                    let type = "PARTIAL INSERT ";
+                    if (err.writeErrors.length === req.body.Data.length)
+                        type = "FULL DUPLICATE ";
+
+                    let message = (type + " " +
+                        "Total items:" + " " + req.body.Data.length + " " +
+                        "New items:" + " " + (req.body.Data.length - err.writeErrors.length) + " " +
+                        "Duplicate items" + " " + err.writeErrors.length);
+
+                    res.json(response.setSuccess(message));
+
+                } else {
+                    res.json(response.setError(err.statusCode, err.message, 'Category service error.'));
+                }
+            });
+
+    } else {
+        res.json(response.setError("Liste boş ya da yok"));
+    }
+});
+
 router.get('/', (req, res, next) => {
 
     query = {};
     var options = {
 
-        sort: { categoryName: -1 },
+        sort: { categoryName: 1 },
         lean: true,
         page: parseInt(req.query.page),
         limit: parseInt(req.query.take),
