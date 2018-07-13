@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const mongoosePaginate = require('mongoose-paginate');
 
+
 const GoogleRssSchema = new Schema(
     {
         _id: mongoose.Schema.Types.ObjectId,
@@ -43,6 +44,9 @@ const GoogleRssSchema = new Schema(
         {
             type: Date,
             default: Date.now
+        },
+        source: {
+            type: String,
         },
 
     }

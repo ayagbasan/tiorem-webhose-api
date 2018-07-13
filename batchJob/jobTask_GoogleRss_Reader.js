@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const CronJob = require('cron').CronJob;
 let Parser = require('rss-parser');
 let parser = new Parser();
-
+var url = require('url');
 const config = require('../config');
 const logger = require('../helper/logger');
 const GoogleRss = require('../models/GoogleRss');
@@ -52,7 +52,8 @@ var jobTask_GoogleRss_Reader = {
             for (let i = 0; i < feed.items.length; i++) {
                 feed.items[i]._id = new mongoose.Types.ObjectId();
                 feed.items[i].clusterId = jobTask_GoogleRss_Reader.getClusterId(feed.items[i].guid);   
-                feed.items[i].pubDate = new Date(feed.items[i].pubDate);            
+                feed.items[i].pubDate = new Date(feed.items[i].pubDate);   
+                feed.items[i].source =  url.parse(feed.items[i].link).host;
             }
 
 
