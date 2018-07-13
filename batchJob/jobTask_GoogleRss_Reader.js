@@ -51,7 +51,8 @@ var jobTask_GoogleRss_Reader = {
             var success = 0, error = 0;
             for (let i = 0; i < feed.items.length; i++) {
                 feed.items[i]._id = new mongoose.Types.ObjectId();
-                feed.items[i].clusterId = jobTask_GoogleRss_Reader.getClusterId(feed.items[i].guid);               
+                feed.items[i].clusterId = jobTask_GoogleRss_Reader.getClusterId(feed.items[i].guid);   
+                feed.items[i].pubDate = new Date(feed.items[i].pubDate);            
             }
 
 

@@ -28,7 +28,7 @@ const GoogleRssSchema = new Schema(
         },
 
         pubDate: {
-            type: String,
+            type: Date,
         },
         isoDate: {
             type: Date,

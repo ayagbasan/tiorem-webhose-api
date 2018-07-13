@@ -2,7 +2,7 @@ let Parser = require('rss-parser');
 const mongoose = require('mongoose');
 let parser = new Parser();
 const Rss = require('../models/Rss');
-
+const logger = require('../helper/logger');
 
 var rss = {
 
@@ -27,6 +27,8 @@ var rss = {
                 .then(function (mongooseDocuments) {
 
                     console.log("FULL INSERT - reading completed from ", source.sourceName, source.category, feed.items.length);
+                    logger.addLog("RSS-Reader", source.sourceName + "-" + source.category, type, feed.items.length, 0, 0);
+
                 })
                 .catch(function (err) {
                     if (err.writeErrors) {
@@ -38,8 +40,9 @@ var rss = {
                             "Total items:", feed.items.length,
                             "New items:", feed.items.length - err.writeErrors.length,
                             "Duplicate items", err.writeErrors.length);
+                        logger.addLog("RSS-Reader", source.sourceName + "-" + source.category, type, feed.items.length, feed.items.length - err.writeErrors.length, err.writeErrors.length);
                     } else {
-                        console.log("reading completed from", source.url, "unknown error", err);
+                        //console.log("reading completed from", source.url, "unknown error", err);
                         logger.addLog("RSS-Reader", source.sourceName + "-" + source.category, err, 0, 0, 0);
                     }
 
