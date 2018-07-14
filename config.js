@@ -3,6 +3,7 @@ const Config = require('./models/Config');
 const logger = require('./helper/logger');
 const jobTask_WebHose_Reader = require('./batchJob/jobTask_WebHose_Reader');
 const jobTask_GoogleRss_Reader = require('./batchJob/jobTask_GoogleRss_Reader');
+const jobTask_jobRssReader= require('./batchJob/jobRssReader');
 
 let config = {
 
@@ -28,7 +29,7 @@ let config = {
                 console.log("GoogleRSS starting......");
                 jobTask_GoogleRss_Reader.start();
             }
-
+            jobTask_jobRssReader.startJob();
 
             // if (data.WebHose != null && data.WebHose.status === 1) {
             //     console.log("WebHose starting......");

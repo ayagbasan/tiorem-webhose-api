@@ -48,9 +48,14 @@ const GoogleRssSchema = new Schema(
         source: {
             type: String,
         },
+         
+        newsId:  {
+            type: String
+        },
 
     }
 );
 
 GoogleRssSchema.plugin(mongoosePaginate);
+ 
 module.exports = mongoose.model('GoogleRss', GoogleRssSchema);

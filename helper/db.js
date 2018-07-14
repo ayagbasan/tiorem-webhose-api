@@ -13,7 +13,7 @@ module.exports = () => {
     mongoose.connection.on('open', () => {
         console.log('MongoDB: Connected');
         config.get();
-        unitTest.startJob();
+        //unitTest.run();
 
     });
     mongoose.connection.on('error', (err) => {

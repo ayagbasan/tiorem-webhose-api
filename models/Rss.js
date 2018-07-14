@@ -16,7 +16,7 @@ const RssSchema = new Schema(
             type: String,
         },
         link: {
-            unique:true,
+            unique: true,
             type: String,
         },
         description: {
@@ -55,7 +55,10 @@ const RssSchema = new Schema(
         {
             type: Boolean,
             default: false
-        }
+        },
+        newsId: {
+            type: String
+        },
 
     }
 );

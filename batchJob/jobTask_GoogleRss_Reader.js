@@ -11,7 +11,7 @@ var jobTask_GoogleRss_Reader = {
     cron: null,
     start: () => {
 
-         
+
         jobTask_GoogleRss_Reader.cron = new CronJob({
             cronTime: config.Data.GoogleRSS.periode,
             onTick: function () {
@@ -50,16 +50,25 @@ var jobTask_GoogleRss_Reader = {
 
             var success = 0, error = 0;
             for (let i = 0; i < feed.items.length; i++) {
-                feed.items[i]._id = new mongoose.Types.ObjectId();
-                feed.items[i].clusterId = jobTask_GoogleRss_Reader.getClusterId(feed.items[i].guid);   
-                feed.items[i].pubDate = new Date(feed.items[i].pubDate);   
-                feed.items[i].source =  url.parse(feed.items[i].link).host;
+
+                try {
+                    feed.items[i]._id = new mongoose.Types.ObjectId();
+                    feed.items[i].clusterId = jobTask_GoogleRss_Reader.getClusterId(feed.items[i].guid);
+                    feed.items[i].pubDate = new Date(feed.items[i].pubDate);
+                    feed.items[i].source = url.parse(feed.items[i].link).host;
+                    feed.items[i].newsId = feed.items[i].clusterId.substring(1, 14);
+                    feed.items[i].relatedId = feed.items[i].clusterId.substring(15, 28);
+                } catch (error) {
+
+                }
+
+
             }
 
 
             GoogleRss.insertMany(feed.items, { ordered: false })
                 .then(function (mongooseDocuments) {
-                    console.log("FULL INSERT - reading completed from ",  "Google RSS", feed.items.length);
+                    console.log("FULL INSERT - reading completed from ", "Google RSS", feed.items.length);
                 })
                 .catch(function (err) {
 
