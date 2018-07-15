@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 var Filtering = require('kendo-grid-filter-sequelize-converter');
 const router = express.Router();
 const response = require('../models/Response');
-const Post = require('../models/Post');
+const WebHose = require('../models/WebHose');
 
 
 router.get('/', (req, res, next) => {
@@ -27,17 +27,17 @@ router.get('/', (req, res, next) => {
 
     };
 
-    const promise = Post.paginate(query, options);
+    const promise = WebHose.paginate(query, options);
     promise.then((data) => {
         if (data.length === 0) {
-            res.status(400).json(response.setError(99, null, 'Post list is empty'));
+            res.status(400).json(response.setError(99, null, 'WebHose list is empty'));
         } else {
             res.json(response.setSuccess(data));
         }
 
     }).catch((err) => {
 
-        res.status(400).json(response.setError(err.statusCode, err.message, 'Post service error.'))
+        res.status(400).json(response.setError(err.statusCode, err.message, 'WebHose service error.'))
 
     });
 
@@ -47,12 +47,12 @@ router.get('/', (req, res, next) => {
 
 router.get('/:id', (req, res, next) => {
 
-    const promise = Post.findById(req.params.id);
+    const promise = WebHose.findById(req.params.id);
 
     promise.then((data) => {
         if (!data) {
 
-            res.status(400).json(response.setError(99, null, 'The post was not found.'));
+            res.status(400).json(response.setError(99, null, 'The WebHose was not found.'));
 
         } else {
             res.json(response.setSuccess(data));
@@ -60,7 +60,7 @@ router.get('/:id', (req, res, next) => {
 
     }).catch((err) => {
 
-        res.status(400).json(response.setError(err.statusCode, err.message, 'Post service error.'))
+        res.status(400).json(response.setError(err.statusCode, err.message, 'WebHose service error.'))
 
     });
 });
@@ -70,7 +70,7 @@ router.put('/:id', (req, res, next) => {
     console.log(req.params.id, req.body);
     let opts = { runValidators: true, new: true };
 
-    const promise = Post.findOneAndUpdate(
+    const promise = WebHose.findOneAndUpdate(
         {
             _id: req.params.id
         },
@@ -82,13 +82,13 @@ router.put('/:id', (req, res, next) => {
 
     promise.then((data) => {
         if (!data) {
-            res.status(400).json(response.setError(99, null, 'The post was not found.'));
+            res.status(400).json(response.setError(99, null, 'The WebHose was not found.'));
 
         } else {
             res.json(response.setSuccess(data));
         }
     }).catch((err) => {
-        res.status(400).json(response.setError(err.statusCode, err.message, 'Post service error.'));
+        res.status(400).json(response.setError(err.statusCode, err.message, 'WebHose service error.'));
     });
 });
 
@@ -99,7 +99,7 @@ router.put('/', (req, res, next) => {
     console.log(req.body);
     let opts = { runValidators: true, new: true };
 
-    const promise = Post.findOneAndUpdate(
+    const promise = WebHose.findOneAndUpdate(
         {
             _id: req.body._id
         },
@@ -111,13 +111,13 @@ router.put('/', (req, res, next) => {
 
     promise.then((data) => {
         if (!data) {
-            res.status(400).json(response.setError(99, null, 'The post was not found.'));
+            res.status(400).json(response.setError(99, null, 'The WebHose was not found.'));
 
         } else {
             res.json(response.setSuccess(data));
         }
     }).catch((err) => {
-        res.status(400).json(response.setError(err.statusCode, err.message, 'Post service error.'));
+        res.status(400).json(response.setError(err.statusCode, err.message, 'WebHose service error.'));
     });
 });
 
@@ -125,29 +125,21 @@ router.delete('/:id', (req, res, next) => {
 
     const id = req.params.id;
 
-    const promise = Post.remove({ _id: id });
+    const promise = WebHose.remove({ _id: id });
 
     promise.then((data) => {
         if (!data) {
-            res.status(400).json(response.setError(99, null, 'The post was not found.'));
+            res.status(400).json(response.setError(99, null, 'The WebHose was not found.'));
 
         } else {
             res.json(response.setSuccess(data));
         }
     }).catch((err) => {
-        res.status(400).json(response.setError(err.statusCode, err.message, 'Post service error.'));
+        res.status(400).json(response.setError(err.statusCode, err.message, 'WebHose service error.'));
     });
 });
 
 
-router.post('/runBatchJob/', (req, res, next) => {
-
-    const jobTask = require('./batchJob/jobTask');
-    jobTask.start();
-    res.json(response.setSuccess("Job started"));
-
-
-});
-
+ 
 
 module.exports = router;

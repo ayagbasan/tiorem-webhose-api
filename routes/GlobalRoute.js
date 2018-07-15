@@ -52,7 +52,7 @@ router.post('/register', (req, res, next) => {
 
 router.post('/authenticate', (req, res) => {
     const { username, password } = req.body;
-
+ console.log(Config.token_secret_key);
     Account.findOne({
         username
     }, (err, user) => {
@@ -104,6 +104,7 @@ router.post('/authenticate', (req, res) => {
 router.post('/tokenCheck', (req, res) => {
 
     const token = req.headers['x-access-token'] || req.body.token || req.query.token
+
 
     if (token) {
         jwt.verify(token, Config.token_secret_key, (err, decoded) => {

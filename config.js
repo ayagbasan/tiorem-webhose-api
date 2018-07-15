@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
 const Config = require('./models/Config');
 const logger = require('./helper/logger');
-const jobTask_WebHose_Reader = require('./batchJob/jobTask_WebHose_Reader');
-const jobTask_GoogleRss_Reader = require('./batchJob/jobTask_GoogleRss_Reader');
-const jobTask_jobRssReader= require('./batchJob/jobRssReader');
+const jobGoogleRSSReader = require('./batchJob/jobGoogleRSSReader');
+const jobMapping = require('./batchJob/jobMapping');
+const jobRssReader = require('./batchJob/jobRssReader');
+const jobTranslate = require('./batchJob/jobTranslate');
+const jobWebHoseReader = require('./batchJob/jobWebHoseReader');
 
 let config = {
 
@@ -13,31 +15,50 @@ let config = {
     Data: null,
 
 
-    get: () => {
-
+    get: function ()   {
+        config.update_timestamp=this.update_timestamp;
+        config.get=this.get;
         const promise = Config.findById(config._id);
 
         promise.then((data) => {
 
-            this.update_timestamp = config.update_timestamp;
-            this.get = config.get;
-            this.Data = data;
+            
+            config.Data = data;
+           // config.token_secret_key = data.token_secret_key
 
-            console.log("Getting app variables", this.Data);
+            console.log("Getting app variables", config.Data);
 
             if (data.GoogleRSS != null && data.GoogleRSS.status === 1) {
-                console.log("GoogleRSS starting......");
-                jobTask_GoogleRss_Reader.start();
+                let settingsDB = data.GoogleRSS;
+                console.log(settingsDB.jobName, "initializing......");
+                jobGoogleRSSReader.initialize(settingsDB);
             }
-            jobTask_jobRssReader.startJob();
 
-            // if (data.WebHose != null && data.WebHose.status === 1) {
-            //     console.log("WebHose starting......");
-            //     jobTask_WebHose_Reader.start();
-            // }
-            //console.log(this);
-            //jobTask_WebHose_Reader.start();
-            //jobTask_GoogleRss_Reader.start();
+            if (data.Mapping != null && data.Mapping.status === 1) {
+                let settingsDB = data.Mapping;
+                console.log(settingsDB.jobName, "initializing......");
+                jobMapping.initialize(settingsDB);
+            }
+
+            if (data.RssSources != null && data.RssSources.status === 1) {
+                let settingsDB = data.RssSources;
+                console.log(settingsDB.jobName, "initializing......");
+                jobRssReader.startJob();
+            }
+
+            if (data.Translate != null && data.Translate.status === 1) {
+                let settingsDB = data.Translate;
+                console.log(settingsDB.jobName, "initializing......");
+                jobTranslate.initialize(settingsDB);
+            }
+
+            if (data.WebHose != null && data.WebHose.status === 1) {
+                let settingsDB = data.WebHose;
+                console.log(settingsDB.jobName, "initializing......");
+                jobWebHoseReader.initialize(settingsDB);
+            }
+
+
             logger.addLog("Config", "initialize", "OK");
 
         }).catch((err) => {
@@ -47,44 +68,36 @@ let config = {
         });
     },
 
-    update_timestamp: (datetime, jobType, nexttime) => {
+    update_timestamp: function (jobSettings, datetime, nexttime) {
 
         let options = { runValidators: true, new: true };
 
-        let whereClause = null;
-        if (jobType === "jobTask_WebHose_Reader") {
-            whereClause =
-                {
-                    "WebHose.lastTimestamp": datetime.getTime(),
-                    "WebHose.lastRunTime": datetime,
-                    "WebHose.nextRunTime": nexttime
-                };
-        }
-        else if (jobType === "jobTask_GoogleRss_Reader") {
-            whereClause =
-                {
-                    "GoogleRSS.lastTimestamp": datetime.getTime(),
-                    "GoogleRSS.lastRunTime": datetime,
-                    "GoogleRSS.nextRunTime": nexttime
-                };
-        }
+        let lastTimestampKey = jobSettings.Tag + ".lastTimestamp",
+            lastRunTimeKey = jobSettings.Tag + ".lastRunTime",
+            nextRunTimeKey = jobSettings.Tag + ".nextRunTime";
+
+        let whereClause =
+        {
+            lastTimestampKey: datetime.getTime(),
+            lastRunTimeKey: datetime,
+            nextRunTimeKey: nexttime
+        };
 
         const promise = Config.findOneAndUpdate(
-            this.Data._id,
+            config.Data._id,
             whereClause,
             options
         );
 
         promise.then((data) => {
-            this.Data = data;
-            console.log("Update last timestamp for " + jobType + " : ", datetime.getTime());
+            config.Data = data;
+            console.log(jobSettings.jobName, "Updated last timestamp", datetime.getTime());
+            console.log(jobSettings.jobName, "Updated next run timestamp", datetime.getTime());
 
         }).catch((err) => {
             console.log(err.statusCode, err.message, 'config service error. update last timestamp');
 
         });
-
-
 
     },
 

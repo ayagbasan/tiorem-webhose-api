@@ -1,4 +1,4 @@
-const translater = require('./business/Translater');
+ 
 const GoogleRssRoute = require('./routes/GoogleRssRoute');
 const crud = require("./database/crud");
 const GoogleRss = require('./models/GoogleRss');
@@ -27,34 +27,11 @@ let unitTest = {
         //     unitTest.classifyTextOfText(text);
         // });
 
-        const promise = GoogleRss.find({});
-
-        promise.then((data) => {
-
-
-            let clusterId, newsId, relatedId;
-            for (const item of data) {
-
-               
-                clusterId = item.clusterId;
-                newsId = item.clusterId.substring(1, 14);
-                relatedId = item.clusterId.substring(15, 28);
-                console.log(item._id, clusterId, newsId,relatedId);
-
-
-                GoogleRss.update({ _id: item._id }, { newsId: newsId, relatedId: relatedId }).exec();
-
-            }
+        
 
 
 
-
-
-        }).catch((err) => {
-
-            console.log(err);
-        });
-
+ 
 
 
 

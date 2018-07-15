@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const CronJob = require('cron').CronJob;
+var moment = require('moment')
 let Parser = require('rss-parser');
 let parser = new Parser();
 var url = require('url');
@@ -7,41 +8,47 @@ const config = require('../config');
 const logger = require('../helper/logger');
 const GoogleRss = require('../models/GoogleRss');
 
-var jobTask_GoogleRss_Reader = {
+/*
+Google RSS haberlerini okur
+*/
+var jobGoogleRss = {
     cron: null,
-    start: () => {
+    settings: null,
+    initialize: function (settingsDB) {
 
-
-        jobTask_GoogleRss_Reader.cron = new CronJob({
-            cronTime: config.Data.GoogleRSS.periode,
+        jobGoogleRss.settings = settingsDB;
+        jobGoogleRss.cron = new CronJob({
+            cronTime: jobGoogleRss.settings.periode,
             onTick: function () {
                 try {
-                    console.log("jobTask_GoogleRss_Reader Get last timestamp: ", config.Data.GoogleRSS.lastTimestamp, " Next Job Runtime", this.nextDates());
-                    jobTask_GoogleRss_Reader.run();
+                    jobGoogleRss.start();
 
                 } catch (error) {
-                    logger.addLog("Cron Job", "WebHose-Job-Error", error);
+                    logger.addLog(jobGoogleRss.settings.jobName, "Error", error);
                 }
             },
             onComplete: function () {
                 console.log("job bitti");
             },
-            start: true,
-            runOnInit: true,
+            start: jobGoogleRss.settings.start,
+            runOnInit: jobGoogleRss.settings.runOnInit,
 
         });
 
     },
-    stop: () => {
-        if (jobTask_GoogleRss_Reader.cron != null) {
-            jobTask_GoogleRss_Reader.cron.stop();
+    stop: function () {
+        if (jobGoogleRss.cron != null) {
+            console.log(jobGoogleRss.settings.jobName, "stopped");
+            jobGoogleRss.cron.stop();
+
         }
     },
 
-    getStatus: () => {
-        return jobTask_GoogleRss_Reader.cron;
+    getJobStatus: function () {
+        return jobGoogleRss.cron;
     },
-    run: () => {
+
+    start: () => {
 
         (async () => {
 
@@ -53,7 +60,7 @@ var jobTask_GoogleRss_Reader = {
 
                 try {
                     feed.items[i]._id = new mongoose.Types.ObjectId();
-                    feed.items[i].clusterId = jobTask_GoogleRss_Reader.getClusterId(feed.items[i].guid);
+                    feed.items[i].clusterId = jobGoogleRss.getClusterId(feed.items[i].guid);
                     feed.items[i].pubDate = new Date(feed.items[i].pubDate);
                     feed.items[i].source = url.parse(feed.items[i].link).host;
                     feed.items[i].newsId = feed.items[i].clusterId.substring(1, 14);
@@ -61,8 +68,6 @@ var jobTask_GoogleRss_Reader = {
                 } catch (error) {
 
                 }
-
-
             }
 
 
@@ -87,11 +92,12 @@ var jobTask_GoogleRss_Reader = {
                 });
 
 
-            console.log("GoogleRss", "GoogleRss-Read", "Success", feed.items.length, success, error);
-            logger.addLog("GoogleRss", "GoogleRss-Read", "Success", feed.items.length, success, error);
-            config.update_timestamp(new Date(), "jobTask_GoogleRss_Reader", jobTask_GoogleRss_Reader.cron.nextDates());
+            logger.addLog(jobGoogleRss.settings.jobName, "GoogleRss-Read", "Success", feed.items.length, success, error);
+           // config.update_timestamp( jobGoogleRss.settings, new Date(), jobGoogleRss.cron.nextDates());
 
         })();
+
+
 
     },
     getClusterId: (guid) => {
@@ -107,8 +113,9 @@ var jobTask_GoogleRss_Reader = {
             return guid;
 
     }
+
 }
 
-module.exports = jobTask_GoogleRss_Reader;
+module.exports = jobGoogleRss;
 
 

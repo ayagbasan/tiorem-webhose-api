@@ -5,10 +5,7 @@ const mongoosePaginate = require('mongoose-paginate');
 const RssSchema = new Schema(
     {
         _id: mongoose.Schema.Types.ObjectId,
-        relatedId: {
-            type: String,
-            default: ""
-        },
+       
         source: {
             type: String,
         },
@@ -21,6 +18,10 @@ const RssSchema = new Schema(
         },
         description: {
             type: String,
+        },
+        descriptionEn: {
+            type: String,
+            default: ""
         },
         guid: {
             type: String,
@@ -46,7 +47,7 @@ const RssSchema = new Schema(
         {
             type: Date
         },
-        isTranslated:
+        isTranslate:
         {
             type: Boolean,
             default: false
@@ -57,7 +58,12 @@ const RssSchema = new Schema(
             default: false
         },
         newsId: {
-            type: String
+            type: String,
+            default: ""
+        },
+        relatedId: {
+            type: String,
+            default: ""
         },
 
     }

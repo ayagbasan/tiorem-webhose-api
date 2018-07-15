@@ -3,24 +3,58 @@ const express = require('express');
 const router = express.Router();
 let response = require('../models/Response');
 const Config = require('../models/Config');
+const settings = require('../config');
+const jobGoogleRSSReader = require('../batchJob/jobGoogleRSSReader');
+const jobMapping = require('../batchJob/jobMapping');
+const jobRssReader = require('../batchJob/jobRssReader');
+const jobTranslate = require('../batchJob/jobTranslate');
+const jobWebHoseReader = require('../batchJob/jobWebHoseReader');
 
 
-
-router.post('/webHose', (req, res, next) => {
+router.post('/serviceStatus', (req, res, next) => {
 
     console.log(req.body);
-    
-    let serviceName= req.body.ServiceName;
-    let term= req.body.Term;
 
-    if (serviceName === "WebHose") {
-        if (term === "start")
-            jobTask_WebHose_Reader.start();
-        else if (term === "stop")
-            jobTask_WebHose_Reader.stop();
-    }
+    let serviceTag = req.body.job.jobTag;
+    let term = req.body.Term;
+
+    const promise = Config.findById(settings._id);
 
     promise.then((data) => {
+
+
+        if (serviceTag === "GoogleRSS") {
+            if (term === "start")
+                jobGoogleRSSReader.initialize(data.GoogleRSS);
+            else if (term === "stop")
+                jobGoogleRSSReader.stop();
+        }
+        else if (serviceTag === "Mapping") {
+            if (term === "start")
+                jobMapping.initialize(data.Mapping);
+            else if (term === "stop")
+                jobMapping.stop();
+        }
+        else if (serviceTag === "RssSources") {
+            if (term === "start")
+                jobRssReader.initialize(data.RssSources);
+            else if (term === "stop")
+                jobRssReader.stop();
+        }
+        else if (serviceTag === "Translate") {
+            if (term === "start")
+                jobTranslate.initialize(data.Translate);
+            else if (term === "stop")
+                jobTranslate.stop();
+        }
+        else if (serviceTag === "WebHose") {
+            if (term === "start")
+                jobWebHoseReader.initialize(data.WebHose);
+            else if (term === "stop")
+                jobWebHoseReader.stop();
+        }
+
+    }).then((data) => {
 
         res.json(response.setSuccess(data));
 
@@ -54,47 +88,23 @@ router.get('/:id', (req, res, next) => {
 
 
 
-// insert
-router.post('/', (req, res, next) => {
-
-    console.log(req.body);
-    req.body._id = new mongoose.Types.ObjectId();
-    req.body.WebHose._id = new mongoose.Types.ObjectId();
-    req.body.GoogleRSS._id = new mongoose.Types.ObjectId();
-
-    const config = new Config(req.body);
-    const promise = config.save();
-
-    promise.then((data) => {
-
-        res.json(response.setSuccess(data));
-
-    }).catch((err) => {
-
-        res.json(response.setError(err.statusCode, err.message, 'Config service error.'));
-
-    });
-});
-
 
 //update Config
 router.put('/:id', (req, res, next) => {
     console.log(req.body);
     let options = { runValidators: true, new: true };
+
+     
+    
     const promise = Config.findByIdAndUpdate(
         req.params.id,
-        {
-            GoogleRSS: req.body.Data.GoogleRSS,
-            WebHose: req.body.Data.WebHose,
-            
-        },
+        req.body.Data,
         options
     );
 
     promise.then((data) => {
         if (!data) {
             next(res.json(response.setError(99, null, 'The Config was not found.')));
-
         } else {
             res.json(response.setSuccess(data));
         }
