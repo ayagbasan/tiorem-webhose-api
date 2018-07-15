@@ -3,20 +3,33 @@ const Log = require('../models/Log');
 
 var logger = {
 
-    addLog: function (className,title, comment, totalResults,moreResultsAvailable,requestsLeft) {
+    addLog: function (className, title, comment) {
 
-        const log = new Log(
+        try {
+            const logItem =
             {
                 _id: new mongoose.Types.ObjectId(),
                 Title: title,
                 Class: className,
-                Comment: comment,
-                TotalResults: totalResults,
-                MoreResultsAvailable: moreResultsAvailable,
-                RequestsLeft: requestsLeft
+                Comment: comment
+
+            };
+
+            const log = new Log(logItem);
+            const promise = log.save();
+
+            promise.catch((err) => {
+
+                console.log("Error log not saved", className, title, comment, err);
+
             });
 
-            log.save();
+
+
+        } catch (error) {
+            console.log("Error log unknown error", className, title, comment, error);
+        }
+
     }
 
 }

@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
-const Config = require('./models/Config');
 const logger = require('./helper/logger');
+
+const Config = require('./models/Config');
+const RssCategory = require('./models/RssCategory');
+const CategoryMapping = require('./models/CategoryMapping');
+
+const jobCategory = require('./batchJob/jobCategory');
 const jobGoogleRSSReader = require('./batchJob/jobGoogleRSSReader');
 const jobMapping = require('./batchJob/jobMapping');
 const jobRssReader = require('./batchJob/jobRssReader');
@@ -13,20 +18,43 @@ let config = {
     environment: "PROD",
     token_secret_key: "5b47145574d6642da4c98361",
     Data: null,
+    CategoryMappingList: null,
 
 
-    get: function ()   {
-        config.update_timestamp=this.update_timestamp;
-        config.get=this.get;
+    get: () => {
+
         const promise = Config.findById(config._id);
 
-        promise.then((data) => {
+        promise.then((settings) => {
+            // Okunacak statik listeleri oku
+            console.log("Getting app variables", config);
+            config.Data = settings;
 
-            
-            config.Data = data;
-           // config.token_secret_key = data.token_secret_key
 
-            console.log("Getting app variables", config.Data);
+            return CategoryMapping.find()
+                .then((catList) => {
+                    config.CategoryMappingList = catList;
+                    return settings;
+                })
+                .catch((err) => {
+                    logger.addLog("Config", "Static Cache", "ERROR" + err.message);
+                    console.log("Static cache errror", err);
+                    return settings;
+                });
+
+
+
+
+        }).then((data) => {
+
+            // Servisleri BAŞLAT
+            if (data.Category != null && data.Category.status === 1) {
+                let settingsDB = data.Category;
+                settingsDB.update_timestamp = config.update_timestamp;
+                settingsDB.CategoryMappingList = config.CategoryMappingList;
+                console.log(settingsDB.jobName, "initializing......");
+                jobCategory.initialize(settingsDB);
+            }
 
             if (data.GoogleRSS != null && data.GoogleRSS.status === 1) {
                 let settingsDB = data.GoogleRSS;
@@ -52,6 +80,8 @@ let config = {
                 jobTranslate.initialize(settingsDB);
             }
 
+
+
             if (data.WebHose != null && data.WebHose.status === 1) {
                 let settingsDB = data.WebHose;
                 console.log(settingsDB.jobName, "initializing......");
@@ -61,6 +91,7 @@ let config = {
 
             logger.addLog("Config", "initialize", "OK");
 
+
         }).catch((err) => {
             logger.addLog("Config", "initialize", "ERROR" + err.message);
             console.log(err.statusCode, err.message, 'config service error.');
@@ -68,37 +99,44 @@ let config = {
         });
     },
 
-    update_timestamp: function (jobSettings, datetime, nexttime) {
+    update_timestamp: (job) => {
 
-        let options = { runValidators: true, new: true };
+        try {
 
-        let lastTimestampKey = jobSettings.Tag + ".lastTimestamp",
-            lastRunTimeKey = jobSettings.Tag + ".lastRunTime",
-            nextRunTimeKey = jobSettings.Tag + ".nextRunTime";
 
-        let whereClause =
-        {
-            lastTimestampKey: datetime.getTime(),
-            lastRunTimeKey: datetime,
-            nextRunTimeKey: nexttime
-        };
+            let datetime = new Date();
+            let options = { runValidators: true, new: true };
 
-        const promise = Config.findOneAndUpdate(
-            config.Data._id,
-            whereClause,
-            options
-        );
 
-        promise.then((data) => {
-            config.Data = data;
-            console.log(jobSettings.jobName, "Updated last timestamp", datetime.getTime());
-            console.log(jobSettings.jobName, "Updated next run timestamp", datetime.getTime());
+            let lastTimestampKey = job.settings.Tag + ".lastTimestamp",
+                lastRunTimeKey = job.settings.Tag + ".lastRunTime",
+                nextRunTimeKey = job.settings.Tag + ".nextRunTime";
 
-        }).catch((err) => {
-            console.log(err.statusCode, err.message, 'config service error. update last timestamp');
+            let whereClause =
+            {
+                lastTimestampKey: datetime.getTime(),
+                lastRunTimeKey: datetime,
+                nextRunTimeKey: job.cron.nextDates()
+            };
 
-        });
+            const promise = Config.findOneAndUpdate(
+                config.Data._id,
+                whereClause,
+                options
+            );
 
+            promise.then((data) => {
+                config.Data = data;
+                console.log(job.settings.jobName, "Updated last timestamp", datetime.getTime());
+                console.log(job.settings.jobName, "Updated next run timestamp", datetime.getTime());
+
+            }).catch((err) => {
+                console.log(err.statusCode, err.message, job.settings.jobName + ' - config service error. update last timestamp');
+
+            });
+        } catch (error) {
+            console.log(error);
+        }
     },
 
 

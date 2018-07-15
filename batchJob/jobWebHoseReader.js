@@ -66,8 +66,8 @@ var jobWebHoseReader = {
             query.then(output => {
                 output['WebHoses'].map(WebHose => saveDatabase(WebHose));
     
-                console.log( jobWebHoseReader.settings.jobName, "Reading", "Success", output.totalResults, output.moreResultsAvailable, output.requestsLeft);
-                logger.addLog(jobWebHoseReader.settings.jobName, "Reading", "Success", output.totalResults, output.moreResultsAvailable, output.requestsLeft);
+                console.log( jobWebHoseReader.settings.jobName, "Reading", "Success");
+                logger.addLog(jobWebHoseReader.settings.jobName, "Reading", "Success");
                 config.update_timestamp(jobWebHoseReader.settings,  new Date(),  jobWebHoseReader.cron.nextDates());
             });
     

@@ -10,6 +10,7 @@ const ConfigSchema = new Schema
     Mapping: SubConfig.schema,
     Translate: SubConfig.schema,
     RssSources: SubConfig.schema,
+    Category: SubConfig.schema,
     Version:
     {
       type: Number,

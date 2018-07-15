@@ -92,7 +92,7 @@ var jobGoogleRss = {
                 });
 
 
-            logger.addLog(jobGoogleRss.settings.jobName, "GoogleRss-Read", "Success", feed.items.length, success, error);
+            logger.addLog(jobGoogleRss.settings.jobName, "GoogleRss-Read", "Success");
            // config.update_timestamp( jobGoogleRss.settings, new Date(), jobGoogleRss.cron.nextDates());
 
         })();

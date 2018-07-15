@@ -61,7 +61,7 @@ let jobRssReader = {
 
         }).catch((err) => {
 
-           // console.log(3, err);
+            console.log(3, err);
 
         });
 

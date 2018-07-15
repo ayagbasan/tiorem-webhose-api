@@ -5,7 +5,7 @@ const mongoosePaginate = require('mongoose-paginate');
 const RssSchema = new Schema(
     {
         _id: mongoose.Schema.Types.ObjectId,
-       
+
         source: {
             type: String,
         },
@@ -65,6 +65,19 @@ const RssSchema = new Schema(
             type: String,
             default: ""
         },
+        googleCategoryStatus:
+        {
+            type: Number,
+            default: 0
+        },
+        googleCategory: {
+            type: String,
+            default: ""
+        },
+        tioremCategory: {
+            type: String,
+            default: ""
+        }
 
     }
 );
