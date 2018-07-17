@@ -32,7 +32,7 @@ const RssSourceSchema = new Schema(
             type:Boolean,
             default:true
         },
-        isTranlate :
+        isTranslate :
         {
             type:Boolean,
             default:false

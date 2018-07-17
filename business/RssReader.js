@@ -9,7 +9,7 @@ var rss = {
 
     read: (source) => {
 
-        
+
 
         return (async () => {
 
@@ -31,6 +31,11 @@ var rss = {
 
                         feed.items[i].description = striptags(feed.items[i].description);
 
+                        if (source.isTranslate)
+                            feed.items[i].isTranslate = source.isTranslate;
+                        else
+                            feed.items[i].isTranslate = false;
+                            
 
                     } catch (error) {
                         logger.addLog("RSS-Reader-ERROR-1", source.sourceName + "-" + source.category, error);
