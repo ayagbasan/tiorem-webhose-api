@@ -67,7 +67,7 @@ app.set('view engine', 'jade');
 
 
 app.use('/api/global', globalRoute);
-app.use('/api', verifyToken);
+//app.use('/api', verifyToken);
 app.use('/api/post', postRoute);
 app.use('/api/account', accountRoute); 
 app.use('/api/config', configRoute); 
